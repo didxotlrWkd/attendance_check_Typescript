@@ -1,0 +1,317 @@
+{% extends "adminMainPage.html" %}
+
+{% block title %}학생 정보 보기{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        margin: 0;
+        background-color: #eaeaea;
+    }
+
+    .content {
+        padding: 20px;
+        flex-grow: 1;
+        background-color: #f0f8ff;
+        min-height: 100vh;
+    }
+
+    h1 {
+        color: #333;
+        font-size: 24px;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+    }
+
+    h2 {
+        margin-top: 30px;
+        color: #444;
+        font-size: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 10px;
+    }
+
+    input.form-control {
+        width: 99%;
+        /* 전체 너비 */
+        padding: 0.5rem;
+        /* 내부 여백 */
+        border: 1px solid #ccc;
+        /* 테두리 색상 */
+        border-radius: 0.25rem;
+        /* 모서리 둥글게 */
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+        /* 그림자 효과 */
+        transition: border-color 0.2s;
+        /* 테두리 색상이 바뀔 때의 애니메이션 */
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        transition: border-color 0.3s;
+        font-size: 16px;
+    }
+
+    .form-control:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .table th,
+    .table td {
+        padding: 12px;
+        border: 1px solid #24549c;
+        text-align: left;
+        font-size: 16px;
+    }
+
+    .table th {
+        background-color: #24549c;
+        color: white;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f5f5f5;
+    }
+
+    .alert {
+        padding: 15px;
+        margin-top: 20px;
+        background-color: #f44336;
+        color: white;
+        border-radius: 5px;
+    }
+
+    #button1 {
+        background-color: #24549c;
+        /* 원하는 배경색 */
+        color: white;
+        /* 글자색 */
+        border: none;
+        /* 테두리 없애기 */
+        padding: 10px;
+        /* 여백 */
+        border-radius: 5px;
+        /* 모서리 둥글게 */
+        cursor: pointer;
+        /* 커서 모양 */
+    }
+
+    .btn {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        transition: background-color 0.3s, transform 0.2s;
+        /* 배경색과 변형 효과 추가 */
+        background-color: #24549c;
+        /* 버튼 기본 색상 */
+        color: white;
+        /* 글자색 흰색 */
+        font-size: 16px;
+        /* 글자 크기 */
+    }
+
+    html #user-edit-form button {
+        background-color: #28a745;
+        /* 초록색 배경색 */
+        color: white;
+        /* 글자색 흰색 */
+        border: none;
+        /* 테두리 없애기 */
+        padding: 10px;
+        /* 여백 */
+        border-radius: 5px;
+        /* 모서리 둥글게 */
+        cursor: pointer;
+        /* 커서 모양 */
+        transition: background-color 0.3s;
+        /* 배경색 전환 효과 */
+    }
+
+    #user-password-edit-form button {
+        background-color: #3584b6;
+        /* 초록색 배경색 */
+        color: white;
+        /* 글자색 흰색 */
+        border: none;
+        /* 테두리 없애기 */
+        padding: 10px;
+        /* 여백 */
+        border-radius: 5px;
+        /* 모서리 둥글게 */
+        cursor: pointer;
+        /* 커서 모양 */
+        transition: background-color 0.3s;
+        /* 배경색 전환 효과 */
+    }
+
+    #user-delete-form button {
+        background-color: #ce1c31;
+        /* 초록색 배경색 */
+        color: white;
+        /* 글자색 흰색 */
+        border: none;
+        /* 테두리 없애기 */
+        padding: 10px;
+        /* 여백 */
+        border-radius: 5px;
+        /* 모서리 둥글게 */
+        cursor: pointer;
+        /* 커서 모양 */
+        transition: background-color 0.3s;
+        /* 배경색 전환 효과 */
+    }
+
+    .password-input {
+        width: 100%; /* 입력 필드 너비 */
+        padding: 10px; /* 입력 필드 여백 */
+        border: 1px solid #ccc; /* 테두리 색상 */
+        border-radius: 5px; /* 테두리 둥글게 */
+        transition: border-color 0.3s; /* 테두리 색상 전환 효과 */
+    }
+
+    .password-input:focus {
+        border-color: #007bff; /* 포커스 시 테두리 색상 */
+        outline: none; /* 기본 아웃라인 제거 */
+    }
+
+    .password-submit-button {
+        padding: 10px 15px; /* 버튼 여백 */
+        background-color: #007bff; /* 버튼 배경색 */
+        color: white; /* 버튼 글자색 */
+        border: none; /* 버튼 테두리 제거 */
+        border-radius: 5px; /* 버튼 모서리 둥글게 */
+        cursor: pointer; /* 커서 포인터 */
+        transition: background-color 0.3s; /* 배경색 전환 효과 */
+        margin-top: 10px; /* 버튼 위쪽 여백 */
+    }
+</style>
+
+<h1>학생 정보</h1>
+
+<button class="btn" onclick="location.href='/admin/download/student-info'">학생 데이터 다운로드</button>
+
+<h2>학생 학번 검색</h2>
+<form id="student-search-form" action="/admin/search/specific-user" method="POST" class="mb-3"
+    onsubmit="return checkInput()">
+    <div class="form-group">
+        <label for="student_code">학번</label>
+        <input type="text" class="form-control" id="student_code" name="student_code">
+    </div>
+    <button type="submit" class="btn" id="searchBtn">학생 확인</button>
+</form>
+<h2>학생 아이디 검색</h2>
+<form id="student-search-form" action="/admin/search/id" method="POST" class="mb-3"
+    onsubmit="return checkInput()">
+    <div class="form-group">
+        <label for="user_id">아이디</label>
+        <input type="text" class="form-control" id="user_id" name="user_id">
+    </div>
+    <button type="submit" class="btn" id="searchBtn">학생 확인</button>
+</form>
+
+<h2>학생 목록 </h2>
+<button class="btn" id="sortBtn" onclick="sortTable()">참여횟수 정렬하기</button>
+<button class="btn" onclick="location.href='/admin/userinfo'">전체 학생 보기</button>
+{% if users %}
+<table class="table" id="userTable">
+    <thead>
+        <tr>
+            <th>아이디</th>
+            <th>학번</th>
+            <th>학과</th>
+            <th>이름</th>
+            <th>참여횟수</th>
+            <th>수정</th>
+            <th>비밀번호 수정</th>
+            <th>삭제</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.student_code }}</td>
+            <td>{{ user.major }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.participant_count }}</td>
+            <td>
+                <form id="user-edit-form" action="/admin/user/edit/page" method="POST">
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <button type="submit">수정</button>
+                </form>
+            </td>
+            <td>
+                <form id="user-password-edit-form" action="/admin/user/edit/password" method="POST" onsubmit="return validatePassword(this)">
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <input type="password" name="new_password" id="new_password{{ user.id }}" placeholder="새 비밀번호" required>
+                    <button type="submit">비밀번호 수정</button>
+                    <div id="password-error{{ user.id }}" style="color: red; display: none;"></div> <!-- 오류 메시지 표시 -->
+                </form>
+            </td>
+            <td>
+                <form id="user-delete-form" action="/admin/user/delete" method="POST">
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    <button type="submit">삭제</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<h3 style="margin: 10px 0; padding: 0;">{{ message }}</h3>
+{% endif %}
+
+<script>
+    function validatePassword(form) {
+        const password = form.new_password.value;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[~!@]).{8,}$/;
+
+        if (!passwordRegex.test(password)) {
+            const errorDiv = document.getElementById('password-error' + form.user_id.value);
+            errorDiv.textContent = "비밀번호는 최소 8자 이상이어야 하며, 대문자, 소문자, 숫자, 특수문자를 포함해야 합니다.";
+            errorDiv.style.display = 'block';
+            return false; // 제출을 막음
+        }
+
+        return true; // 제출 허용
+    }
+</script>
+
+<script>
+    let sortDirection = 'asc';
+
+    function sortTable() {
+        const table = document.getElementById("userTable");
+        const rows = Array.from(table.rows).slice(1); // 헤더 제외
+
+        rows.sort((a, b) => {
+            const aCount = parseInt(a.cells[3].innerText);
+            const bCount = parseInt(b.cells[3].innerText);
+            return sortDirection === 'asc' ? aCount - bCount : bCount - aCount;
+        });
+
+        rows.forEach(row => table.appendChild(row));
+
+        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>경품 추첨</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        @font-face {
+            font-family: 'GmarketSansBold';
+            src: url('/fonts/GmarketSansTTFBold.ttf') format('truetype');
+            /* 굵은 폰트 */
+        }
+
+        @font-face {
+            font-family: 'GmarketSansLight';
+            src: url('/fonts/GmarketSansTTFLight.ttf') format('truetype');
+            /* 얇은 폰트 */
+        }
+
+        @font-face {
+            font-family: 'GmarketSansMedium';
+            src: url('/fonts/GmarketSansTTFMedium.ttf') format('truetype');
+            /* 중간 두께 폰트 */
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'GmarketSansBold', Arial, sans-serif;
+            /* 기본 폰트 설정 */
+            background-color: #f8f9fa;
+            color: #343a40;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://univting-s3.s3.ap-northeast-2.amazonaws.com/Posts/KakaoTalk_20241023_135232403.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.2;
+            z-index: -1;
+        }
+
+        h1 {
+            color: #000000;
+            font-size: 12rem;
+            margin: 0;
+        }
+
+        h2 {
+            color: #000000;
+            font-size: 6rem;
+            font-weight: 100;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        h3 {
+            color: #000000;
+            font-size: 6rem;
+            margin: 10px 0;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+            font-size: 3rem;
+        }
+
+        th,
+        td {
+            border: 2px solid #dee2e6;
+            padding: 15px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #0bc539;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 1.8rem;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .light-font {
+            font-family: 'GmarketSansLight', sans-serif;
+            /* 얇은 폰트 적용 */
+        }
+
+        .medium-font {
+            font-family: 'GmarketSansMedium', sans-serif;
+            /* 중간 두께 폰트 적용 */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <!-- {% if draw_count %}
+        {% if draw_count <=5 %} <h2>5등</h2>
+            {% elseif draw_count <=9 %} <h2>4등</h2>
+                {% elseif draw_count <=14 %} <h2>3등</h2>
+                    {% elseif draw_count <=16 %} <h2>2등</h2>
+                        {% elseif draw_count >= 16 %}
+                        <h2>1등</h2>
+                        {% endif %}
+                        {% endif %} -->
+                        {% if users %}
+                        {% for user in users %}
+                        <td>
+                            <div style="text-align: center;" class="{{animation_class}}">
+                                <h1 style="font-weight: bold;" id="user-name-{{ loop.index }}">{{ user.name }}</h1>
+                                <div style="display: flex; justify-content: center; align-items: center;">
+                                    <h2 class="medium-font" id="student-code-{{ loop.index }}"
+                                        style="margin: 0; padding-right: 40px; line-height: 1.2;">{{ user.student_code
+                                        }}</h2>
+                                    <h2 class="medium-font" id="major-{{ loop.index }}"
+                                        style="margin: 0; line-height: 1.2;">{{
+                                        user.major }}</h2>
+                                </div>
+                            </div>
+                        </td>
+                        {% endfor %}
+                        {% else %}
+                        <h1>경품 추첨</h1>
+                        <h2 class="light-font">2024 SW융합대학 학술제</h2> <!-- 얇은 폰트 적용 -->
+                        {% endif %}
+                        {% if message %}
+                        <h3 style="margin: 10px 0; padding: 0;">{{ message}}</h3>
+                        {% endif %}
+                        <form action="/admin/draw/random-user/project" method="POST" onsubmit="setDefaultValue()">
+                            <input type="hidden" name="draw_count" id="draw_count" value="{{ draw_count | int }}">
+                            <button type="submit">추첨하기</button>
+                        </form>
+    </div>
+</body>
+<script>
+    function setDefaultValue() {
+        // 숨겨진 입력 필드로 값을 전송
+        let input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'number_of_draw';
+        input.value = 1;
+        document.forms[0].appendChild(input);
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const userEntries = document.querySelectorAll('div[class="{{animation_class}}"]');
+
+        userEntries.forEach(entry => {
+            const nameElement = entry.querySelector('h1');
+            const studentCodeElement = entry.querySelector('h2[id^="student-code-"]');
+            const majorElement = entry.querySelector('h2[id^="major-"]');
+
+            const majorLength = majorElement.textContent.length;
+
+            if (majorLength > 6) {
+                const newFontSize = Math.max(4, 6 - (majorLength - 6) * 0.5); // 기본 폰트 크기 6rem에서 학과 길이에 따라 줄이기
+                studentCodeElement.style.fontSize = newFontSize + 'rem'; // 학번 폰트 크기 설정
+                majorElement.style.fontSize = newFontSize + 'rem'; // 학과 폰트 크기 설정
+            }
+        });
+    });
+</script>
+
+</html>
