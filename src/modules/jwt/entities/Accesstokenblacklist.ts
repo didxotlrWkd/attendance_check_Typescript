@@ -1,12 +1,12 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity("refreshtokenblacklists", { schema: "attendance_app" })
-export class Refreshtokenblacklists {
+@Entity("accesstokenblacklists", { schema: "attendance_app" })
+export class Accesstokenblacklist {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
 
-  @Column("varchar", { name: "refresh_token", length: 255 })
-  refreshToken: string;
+  @Column("varchar", { name: "access_token", length: 255 })
+  accessToken: string;
 
   @Column("datetime", { name: "createdAt" })
   createdAt: Date;

@@ -13,9 +13,9 @@ export class CrpytService {
     constructor(
         private readonly configService: ConfigService
     ) {
-        this.key = scryptSync(this.configService.get('CRYPT_KEY'), 'specialSalt', 32);
-        this.algorithm = this.configService.get('CRYPT_ALGORITHM');
-        this.iv = this.configService.get('CRYPT_IV'), 'hex'
+        this.key = scryptSync(this.configService.get<string>('CRYPT_KEY'), 'specialSalt', 32);
+        this.algorithm = this.configService.get<string>('CRYPT_ALGORITHM');
+        this.iv = this.configService.get<string>('CRYPT_IV'), 'hex'
     }
 
     encrypt(data: string): string {

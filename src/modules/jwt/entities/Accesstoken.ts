@@ -1,4 +1,4 @@
-import { Users } from "src/modules/users/entities/Users";
+import { User } from "src/modules/user/entities/User";
 import {
   Column,
   Entity,
@@ -8,22 +8,25 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 
-@Index("user_id", ["userId"], {})
-@Entity("drawnusers", { schema: "attendance_app" })
-export class Drawnusers {
+@Index("user_id", ["user_id"], {})
+@Entity("accesstokens", { schema: "attendance_app" })
+export class Accesstoken {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
+
+  @Column("varchar", { name: "access_token", length: 255 })
+  accessToken: string;
 
   @Column("datetime", { name: "createdAt" })
   createdAt: Date;
 
   @Column("int", { name: "user_id", nullable: true })
-  userId: number | null;
+  user_id: number | null;
 
-  @ManyToOne(() => Users, (users) => users.drawnusers, {
+  @ManyToOne(() => User, (users) => users.accesstokens, {
     onDelete: "SET NULL",
     onUpdate: "CASCADE",
   })
   @JoinColumn([{ name: "user_id", referencedColumnName: "id" }])
-  user: Users;
+  user: User;
 }

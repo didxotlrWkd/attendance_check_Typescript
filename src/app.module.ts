@@ -5,16 +5,18 @@ import { AdminModule } from './admin/admin.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './user/user.module';
-import { Accesstokenblacklists } from './entities/Accesstokenblacklists';
-import { Accesstokens } from './entities/Accesstokens';
-import { Drawnusers } from './entities/Drawnusers';
-import { Events } from './entities/Events';
-import { Participants } from './entities/Participants';
-import { Refreshtokenblacklists } from './entities/Refreshtokenblacklists';
-import { Refreshtokens } from './entities/Refreshtokens';
-import { Users } from './modules/users/entities/Users';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from 'http-exception.filter';
+import { User } from './modules/user/entities/User';
+import { Participant } from './modules/event/entities/Participant';
+import { Event } from './modules/event/entities/Event';
+import { Accesstokenblacklist } from './modules/jwt/entities/Accesstokenblacklist';
+import { Accesstoken } from './modules/jwt/entities/Accesstoken';
+import { Drawnuser } from './modules/event/entities/Drawnuser';
+import { Refreshtokenblacklist } from './modules/jwt/entities/Refreshtokenblacklist';
+import { Refreshtoken } from './modules/jwt/entities/Refreshtoken';
+
+
 
 @Module({
   imports: [
@@ -33,14 +35,14 @@ import { HttpExceptionFilter } from 'http-exception.filter';
       database: process.env.DB_DATABASE,
       autoLoadEntities: true,
       entities: [
-        Users,
-        Accesstokenblacklists,
-        Accesstokens,
-        Drawnusers,
-        Events,
-        Participants,
-        Refreshtokenblacklists,
-        Refreshtokens,
+        User,
+        Participant,
+        Accesstokenblacklist,
+        Accesstoken,
+        Drawnuser,
+        Event,
+        Refreshtokenblacklist,
+        Refreshtoken,
       ],
       keepConnectionAlive: true, //hotreload시 디비 연결
       migrations: [__dirname + '/migrations/*.ts'],

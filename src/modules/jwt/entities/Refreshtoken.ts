@@ -1,4 +1,4 @@
-import { Users } from "src/modules/users/entities/Users";
+import { User } from "src/modules/user/entities/User";
 import {
   Column,
   Entity,
@@ -9,25 +9,25 @@ import {
 } from "typeorm";
 
 
-@Index("user_id", ["userId"], {})
+@Index("user_id", ["user_id"], {})
 @Entity("refreshtokens", { schema: "attendance_app" })
-export class Refreshtokens {
+export class Refreshtoken {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
 
   @Column("varchar", { name: "refresh_token", length: 255 })
-  refreshToken: string;
+  refresh_token: string;
 
-  @Column("datetime", { name: "createdAt" })
+  @Column("datetime", { name: "createdAt",default: () => "CURRENT_TIMESTAMP" })
   createdAt: Date;
 
-  @Column("int", { name: "user_id", nullable: true })
-  userId: number | null;
+  @Column("int", { name: "user_id", nullable: true }) // user_id 컬럼 추가
+  user_id: number; // Users 엔티티의 id와 동일한 타입
 
-  @ManyToOne(() => Users, (users) => users.refreshtokens, {
+  @ManyToOne(() => User, (users) => users.refreshtokens, {
     onDelete: "SET NULL",
     onUpdate: "CASCADE",
   })
   @JoinColumn([{ name: "user_id", referencedColumnName: "id" }])
-  user: Users;
+  user: User;
 }

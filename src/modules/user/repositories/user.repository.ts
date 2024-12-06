@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Users } from "../entities/Users";
+import { User } from "../entities/User";
 import { Repository } from "typeorm"
 import { InjectRepository } from "@nestjs/typeorm";
 import { LoginUserDto } from "src/user/dto/login-user.dto";
@@ -7,11 +7,11 @@ import { LoginUserDto } from "src/user/dto/login-user.dto";
 @Injectable()
 export class UserRepository {
     constructor(
-        @InjectRepository(Users)
-        private readonly userRepository: Repository<Users>,
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
     ) { }
 
-    async findUserByEncryptStudentCode(student_code: string): Promise<Users> {
+    async findUserByEncryptStudentCode(student_code: string): Promise<User> {
         try {
             const user = await this.userRepository.findOne({ where: { student_code } });
 
@@ -21,7 +21,7 @@ export class UserRepository {
         }
     }
 
-    async createUser(encryptUserDto: LoginUserDto): Promise<Users> {
+    async createUser(encryptUserDto: LoginUserDto): Promise<User> {
         try {
             const new_user = this.userRepository.create({
                 major: encryptUserDto.major,

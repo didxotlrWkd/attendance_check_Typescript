@@ -1,13 +1,14 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ApiOperation, ApiProperty } from "@nestjs/swagger";
 import { IsNumber, IsString } from "class-validator";
-import { Refreshtokens } from "src/entities/Refreshtokens";
-import { Accesstokens } from "src/entities/Accesstokens";
-import { Drawnusers } from "src/entities/Drawnusers";
-import { Participants } from "src/entities/Participants";
+import { Accesstoken } from "src/modules/jwt/entities/Accesstoken";
+import { Drawnuser } from "src/modules/event/entities/Drawnuser";
+import { Participant } from "src/modules/event/entities/Participant";
+import { Refreshtoken } from "src/modules/jwt/entities/Refreshtoken";
+
 
 @Entity("users", { schema: "attendance_app" })
-export class Users {
+export class User {
   @PrimaryGeneratedColumn({ type: "int", name: "id" })
   id: number;
 
@@ -56,15 +57,15 @@ export class Users {
   @Column("datetime", { name: "deletedAt", nullable: true })
   deletedAt: Date | null;
 
-  @OneToMany(() => Accesstokens, (accesstokens) => accesstokens.user)
-  accesstokens: Accesstokens[];
+  @OneToMany(() => Accesstoken, (accesstokens) => accesstokens.user)
+  accesstokens: Accesstoken[];
 
-  @OneToMany(() => Drawnusers, (drawnusers) => drawnusers.user)
-  drawnusers: Drawnusers[];
+  @OneToMany(() => Drawnuser, (drawnusers) => drawnusers.user)
+  drawnusers: Drawnuser[];
 
-  @OneToMany(() => Participants, (participants) => participants.user)
-  participants: Participants[];
+  @OneToMany(() => Participant, (participants) => participants.user)
+  participants: Participant[];
 
-  @OneToMany(() => Refreshtokens, (refreshtokens) => refreshtokens.user)
-  refreshtokens: Refreshtokens[];
+  @OneToMany(() => Refreshtoken, (refreshtokens) => refreshtokens.user)
+  refreshtokens: Refreshtoken[];
 }
