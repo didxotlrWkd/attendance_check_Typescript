@@ -74,19 +74,19 @@
     <h1>이벤트 수정</h1>
     <form action="/admin/user/edit" method="POST">
         <div class="form-group">
-            <input type="hidden" class="form-control" id="user_id" name="user_id" value="{{ user[0].id }}" required readonly>
+            <input type="hidden" class="form-control" id="id" name="id" value="{{ user.id }}" required readonly>
         </div>
         <div class="form-group">
             <label for="student_code">학번</label>
-            <input type="text" class="form-control" id="student_code" name="student_code" value="{{ user[0].student_code }}" required>
+            <input type="text" class="form-control" id="student_code" name="student_code" value="{{ user.student_code }}" required>
         </div>
         <div class="form-group">
             <label for="major">학과</label>
-            <input type="text" class="form-control" id="major" name="major" value="{{ user[0].major }}"  required>
+            <input type="text" class="form-control" id="major" name="major" value="{{ user.major }}"  required>
         </div>
         <div class="form-group">
             <label for="name">이름</label>
-            <input type="text" class="form-control" id="name" name="name" value="{{ user[0].name }}"  required>
+            <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}"  required>
         </div>
         <button type="submit" class="btn">수정 완료</button>
     </form>

@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cipher, createCipheriv, createDecipheriv, Decipher, scryptSync } from 'crypto';
+import { User } from 'src/modules/user/entities/User';
 import { LoginUserDto } from 'src/user/dto/login-user.dto';
 
 
@@ -75,5 +76,32 @@ export class CrpytService {
             throw new Error(err.message)
         }
     }
+
+    decryptUserDto(user : User) : User{
+      try{
+        return {
+          ...user,
+          student_code : this.decrypt(user.student_code),
+          name : this.decrypt(user.name),
+        }
+      }catch(err){
+        throw err
+      }
+    }
+
+    decryptUserInfo(users: User[]): User[] { 
+      try {
+          const decrypt_user_info = users.map(user => {
+              return {
+                  ...user,
+                  student_code: this.decrypt(user.student_code),
+                  name: this.decrypt(user.name),
+              };
+          });
+          return decrypt_user_info;
+      } catch (err) {
+          throw err;
+      }
+  }
 
 }

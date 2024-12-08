@@ -11,7 +11,7 @@ export class RefreshTokenBlackListRepository{
         private readonly refreshtokenBlackListRepository : Repository<Refreshtokenblacklist>
         ){}
 
-    async saveRefreshToken(refresh_token : string, user_id : number){
+    async saveRefreshTokenInBlackList(refresh_token : string){
         try{
             const new_blacklist_refresh_token = this.refreshtokenBlackListRepository.create({
                 refresh_token,

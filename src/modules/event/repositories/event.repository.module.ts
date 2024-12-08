@@ -3,6 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ParticipantRepository } from './participant.repository';
 import { Participant } from '../entities/Participant';
 import { Drawnuser } from '../entities/Drawnuser';
+import { EventRepository } from './event.repository';
+import { Event } from '../entities/Event';
+import { DrawnUserRepository } from './drawnUser.repository';
 
 
 
@@ -13,7 +16,7 @@ import { Drawnuser } from '../entities/Drawnuser';
       Drawnuser,
       ]),
     ],
-    providers: [ParticipantRepository],
-    exports : [ParticipantRepository],
+    providers: [ParticipantRepository, EventRepository, DrawnUserRepository],
+    exports : [ParticipantRepository, EventRepository, DrawnUserRepository],
 })
 export class EventRepositoryModule {}

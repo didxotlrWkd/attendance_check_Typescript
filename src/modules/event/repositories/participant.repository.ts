@@ -14,6 +14,20 @@ export class ParticipantRepository{
         private datasource: DataSource
     ) { }
 
+    async checkParticipant(event_code : string, user_id : number) {
+        try{
+            const is_duplicated_event_code = this.participantRepository.findOne({
+                where : {
+                    event_code,
+                    user_id
+                }
+            })
+            return is_duplicated_event_code
+        }catch(err){
+            throw err
+        }
+    }
+
     async createParticipant(event_code: string, user_id: number) {
         try {
             const new_participant = this.participantRepository.create({
@@ -27,19 +41,5 @@ export class ParticipantRepository{
         }
     }
 
-    async searchParticipantList(user_id: number) {
-        try {
-            const participant_list =
-                await this.participantRepository
-                .createQueryBuilder('participant')
-                .leftJoinAndSelect('participant.event', 'event') 
-                .where('participant.user_id = :userId', { userId: user_id }) 
-                .select(['event.event_code', 'event.event_name']) 
-                .getMany();    
-            return participant_list
-
-            }catch(err){
-                throw err
-            }
-    }
+    
 }

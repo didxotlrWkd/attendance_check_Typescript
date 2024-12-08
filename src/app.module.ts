@@ -47,6 +47,7 @@ import { Refreshtoken } from './modules/jwt/entities/Refreshtoken';
       keepConnectionAlive: true, //hotreload시 디비 연결
       migrations: [__dirname + '/migrations/*.ts'],
       charset: 'utf8mb4_general_ci',
+      timezone: '+09:00',
       synchronize: false, //true로 생성 후 false로 변경
       logging: true, //sql문 확인하고 비효율적일시 수정
     }),
