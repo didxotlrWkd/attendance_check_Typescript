@@ -15,6 +15,8 @@ import { Accesstoken } from './modules/jwt/entities/Accesstoken';
 import { Drawnuser } from './modules/event/entities/Drawnuser';
 import { Refreshtokenblacklist } from './modules/jwt/entities/Refreshtokenblacklist';
 import { Refreshtoken } from './modules/jwt/entities/Refreshtoken';
+import { RedirectFilter } from 'http-redirect-exception.filter';
+import { SecurityModule } from './security/security.module';
 
 
 
@@ -52,6 +54,7 @@ import { Refreshtoken } from './modules/jwt/entities/Refreshtoken';
       logging: true, //sql문 확인하고 비효율적일시 수정
     }),
     UserModule,
+    SecurityModule
   ],
   controllers: [AppController],
   providers: [
@@ -61,6 +64,10 @@ import { Refreshtoken } from './modules/jwt/entities/Refreshtoken';
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
     },
+    {
+      provide: APP_FILTER,
+      useClass: RedirectFilter,
+    }
   ],
 })
 export class AppModule {}

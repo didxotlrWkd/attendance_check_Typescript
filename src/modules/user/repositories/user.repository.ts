@@ -145,4 +145,26 @@ export class UserRepository {
             throw err
         }
     }
+
+    async checkUserInfoByParticipantCount() {
+        try {
+            const users = await this.userRepository.createQueryBuilder('user')
+                .leftJoinAndSelect('user.participants', 'participant')
+                .leftJoinAndSelect('participant.event', 'event')
+                .select([
+                    'user.name',
+                    'user.major',
+                    'user.student_code',
+                    'user.participant_count',
+                    'participant.event_code',
+                    'event.event_name',
+                ])
+                .orderBy('user.participant_count', 'DESC')
+                .getMany();
+
+            return users;
+        } catch (err) {
+            throw err;
+        }
+    }
 }

@@ -3,10 +3,12 @@ import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as nunjucks from 'nunjucks';
 import { join } from 'path';
-import { ValidationPipe } from '@nestjs/common';
+import { Redirect, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from 'http-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import session from 'express-session';
+import { RedirectFilter } from 'http-redirect-exception.filter';
+import passport from 'passport';
 require('dotenv').config()
 
 declare const module: any;
@@ -41,13 +43,16 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new RedirectFilter())
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, //설정 된 속성 이외의 데이터 거부
-      forbidNonWhitelisted: true, // whitelist 이외의 속성 예외 처리
-      transform: true, //데이터를 변환할 수 있는 함수 지정(자동 변환)
+      whitelist: true, 
+      forbidNonWhitelisted: true,
+      transform: true, 
     }))
 
+  app.use(passport.initialize());
+  app.use(passport.session()); 
 
   await app.listen(3000);
 

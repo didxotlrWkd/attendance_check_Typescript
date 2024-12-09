@@ -7,6 +7,7 @@ import { PasswordService } from 'src/security/password.service';
 import { DrawnUserRepository } from 'src/modules/event/repositories/drawnUser.repository';
 import { EventRepository } from 'src/modules/event/repositories/event.repository';
 import { editEventDto } from './dto/edit-event.dto';
+import { ExcelService } from 'src/util/exel.service';
 
 @Injectable()
 export class AdminService {
@@ -16,6 +17,7 @@ export class AdminService {
     private readonly cryptService: CrpytService,
     private readonly passwordService: PasswordService,
     private readonly eventRepository: EventRepository,
+    private readonly excelService: ExcelService
   ) { }
 
   async editUserPage(user_id: number) {
@@ -80,10 +82,6 @@ export class AdminService {
       throw err
     }
   }
-
-  //   async mainPage(){
-
-  //   }
 
 
   async deleteUserByAdmin(user_id: number) {
@@ -205,10 +203,37 @@ export class AdminService {
     }
   }
 
-  // async downloadExcel(): Promise<any> {
-  //     // 학생 정보 엑셀 다운로드 로직
-  //     return {}; // 예시로 빈 객체 반환
-  // }
+  async addEvent(body: editEventDto) {
+    try {
+      const is_event_code = await this.eventRepository.validEventCode(body.event_code)
+      if (is_event_code) {
+        return {
+          error: '중복된 행사 코드입니다',
+          events: await this.eventRepository.getAllEvents()
+        }
+      }
+
+      await this.eventRepository.addEvent(body)
+      
+    } catch (err) {
+      throw err
+    }
+  }
+
+  async downloadExcel(): Promise<any> {
+    try{
+      const students = await this.userRepository.checkUserInfoByParticipantCount()
+      const excelPath = await this.excelService.createExcelFile(students)
+
+      return excelPath
+    }catch(err){
+      throw err
+    }
+  }
+
+  async adminLogin(body) {
+ 
+  }
 
   // async logout(): Promise<any> {
   //     // 로그아웃 로직

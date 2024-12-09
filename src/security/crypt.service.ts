@@ -61,7 +61,7 @@ export class CrpytService {
         }
     }
 
-    encryptUserDto(loginUserDto : LoginUserDto) : LoginUserDto {
+     encryptUserDto(loginUserDto : LoginUserDto) : LoginUserDto {
         try{
             const encrypt_student_code = this.encrypt(loginUserDto.student_code)
             const encrypt_name = this.encrypt(loginUserDto.name)

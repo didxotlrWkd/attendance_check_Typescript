@@ -15,6 +15,26 @@ export class EventRepository {
 
     ) { }
 
+    async addEvent(event: editEventDto) {
+        try {
+            const event_start_time_utc = new Date(new Date(event.event_start_time).getTime() - (9 * 60 * 60 * 1000));
+            const event_end_time_utc = new Date(new Date(event.event_end_time).getTime() - (9 * 60 * 60 * 1000));
+            const new_event = this.eventRepository.create({
+                event_code: event.event_code,
+                event_name: event.event_name,
+                event_start_time: event_start_time_utc,
+                event_end_time: event_end_time_utc,
+                location: event.location,
+                description: event.description
+            })
+
+            await this.eventRepository.save(new_event)
+            return
+        }catch(err){
+            throw err
+        }
+    }
+
     async editEvent(event: editEventDto) {
         try {
 
