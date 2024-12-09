@@ -7,8 +7,8 @@ import { Redirect, ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from 'http-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import session from 'express-session';
-import { RedirectFilter } from 'http-redirect-exception.filter';
 import passport from 'passport';
+import { RedirectFilter } from 'http-redirect-exeption.filter';
 require('dotenv').config()
 
 declare const module: any;
