@@ -14,6 +14,11 @@ import { EventRepositoryModule } from 'src/modules/event/repositories/event.repo
     EventRepositoryModule,
   ],
   controllers: [UserController],
-  providers: [UserService]
+  providers: [
+    UserService,
+  ]
+  
 })
-export class UserModule { }
+export class UserModule { 
+  
+}

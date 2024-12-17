@@ -1,14 +1,17 @@
-import { Controller, Post, Get, Delete, Body, UseGuards } from '@nestjs/common';
-import { UserService } from './user.service'; // 서비스 호출
+import { Controller, Post, Get, Delete, Body, UseGuards, HttpStatus} from '@nestjs/common';
+import { UserService } from './user.service'; 
 import { LoginUserDto } from './dto/login-user.dto';
 import { AuthService } from 'src/security/auth.service';
 import { AuthGuard } from 'src/security/auth.guard';
 import { Decoded } from 'src/security/auth.decorator';
 import { UserPayload } from 'src/security/payload.interface';
-import { ApiBody, ApiOperation, ApiProperty, ApiResponse } from '@nestjs/swagger';
-import { ResponseUserDto } from './dto/response-user.dto';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { JwtResponseDto } from './dto/response-jwt.dto';
+import { EventListResponseDto } from './dto/response-event.dto';
+import { UserResponseDto } from './dto/response-user.dto';
+import { ResponseEntity } from './dto/response-entity.dto';
 
-@Controller('user') // 기본 경로 설정
+@Controller('user') 
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -18,86 +21,80 @@ export class UserController {
   @ApiOperation({ summary: "로그인" })
   @ApiResponse({
     status: 200,
-    description: '로그인 성공시 액세스 및 리프레시 토큰 반환',
-    schema: {
-      example: {
-        access_token: "your_access_token",
-        refresh_token: "your_refresh_token"
-      }
-    }
+    description: '로그인 성공, 액세스 토큰과 리프레시 토큰 반환',
+    type : JwtResponseDto
   })
   @Post('login')
-  async login(@Body() body: LoginUserDto) {
+  async login(
+    @Body() body: LoginUserDto
+  ) : Promise<ResponseEntity<JwtResponseDto>> {
     const is_valid = await this.userService.login(body);
     const access_token = await this.authService.createAccessToken(is_valid)
     const refresh_token = await this.authService.createRefreshToken(is_valid)
     await this.authService.saveRefreshToken(refresh_token, is_valid)
 
-    return { access_token, refresh_token }
+    return ResponseEntity.ok_with(HttpStatus.CREATED,{access_token, refresh_token})
   }
 
+
+  @ApiBearerAuth()
   @ApiOperation({summary : "로그아웃"})
   @UseGuards(AuthGuard)
   @Get('logout')
-  async logout(@Decoded() decoded: UserPayload) {
-    return await this.userService.logout(decoded);
+  async logout(
+    @Decoded() decoded: UserPayload
+  ) : Promise<ResponseEntity<undefined>>{
+    await this.userService.logout(decoded);
+    return ResponseEntity.ok(HttpStatus.NO_CONTENT)
   }
 
-  @UseGuards(AuthGuard)
+
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '이벤트 목록 확인' })
   @ApiResponse({
     status: 200,
     description: '이벤트 목록 및 참여 내역',
-    schema: {
-      type: 'array',
-      items: {
-          type: 'object',
-          properties: {
-              event_code: { type: 'string', example: 'hdhdfhd' },
-              event_name: { type: 'string', example: 'hdhdfh' },
-              description: { type: 'string', example: 'dhdfh' },
-              location: { type: 'string', example: 'dfhdfhdfh' },
-              event_start_time: { type: 'string', format: 'date-time', example: '2024-10-15T08:50:00.000Z' },
-              event_end_time: { type: 'string', format: 'date-time', example: '2024-10-15T08:53:00.000Z' },
-              participants: {
-                  type: 'array',
-                  items: {
-                      type: 'object',
-                      properties: {
-                          user_id: { type: 'number', example: 5 }
-                      }
-                  }
-              }
-          }
-      }
-  }
+    type : EventListResponseDto
   })
+  @UseGuards(AuthGuard)
   @Get('event/list')
-  async checkAttendance(@Decoded() decoded: UserPayload) {
-    return await this.userService.checkEventList(decoded);
+  async checkAttendance(
+    @Decoded() decoded: UserPayload
+  ) : Promise<ResponseEntity<EventListResponseDto>> {
+    const event_list =  await this.userService.checkEventList(decoded);
+    return ResponseEntity.ok_with(HttpStatus.OK , event_list)
   }
 
-  @UseGuards(AuthGuard)
-  @Post('attendance')
+
+  @ApiBearerAuth()
   @ApiOperation({ summary: '참여 저장' })
-    @ApiBody({
+  @ApiBody({
         description: '이벤트 참여 정보',
         schema: {
             properties: {
                 event_code: {
                     type: 'string',
-                    example: 'event123',
+                    example: 'SCHUSWCU1stAF_OpeningCeremony',
                 },
             },
         },
   })
-  async saveParticipation(@Body('event_code') event_code: string, @Decoded() decoded: UserPayload) {
-    return await this.userService.saveParticipation(decoded, event_code);
+  @UseGuards(AuthGuard)
+  @Post('attendance')
+  async saveParticipation(
+    @Body('event_code') event_code: string,
+    @Decoded() decoded: UserPayload
+  ) : Promise<ResponseEntity<undefined>>{
+   await this.userService.saveParticipation(decoded, event_code);
+   return ResponseEntity.ok(HttpStatus.CREATED)
   }
 
-  @UseGuards(AuthGuard)
+  
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '학생 정보 확인' })
   @ApiResponse({
     status: 200,
-    description: '유저 설정 정보 반환',
+    description: '학생 설정 정보 반환',
     schema: {
       example: {
         student_code: "20191535",
@@ -106,14 +103,23 @@ export class UserController {
       }
     }
   })
+  @UseGuards(AuthGuard)
   @Get('setting/info')
-  async checkMyInfo(@Decoded() decoded: UserPayload){
-    return await this.userService.checkMyInfo(decoded);
+  async checkMyInfo(
+    @Decoded() decoded: UserPayload
+  ) : Promise<ResponseEntity<UserResponseDto>> {
+    const myInfo =  await this.userService.checkMyInfo(decoded);
+    return ResponseEntity.ok_with(HttpStatus.OK, myInfo)
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: '학생 정보 삭제' })
   @UseGuards(AuthGuard)
   @Delete()
-  async deleteUser(@Decoded() decoded: UserPayload){
-    return await this.userService.deleteUser(decoded);
+  async deleteUser(
+    @Decoded() decoded: UserPayload
+  ): Promise<ResponseEntity<undefined>>{
+    await this.userService.deleteUser(decoded);
+    return ResponseEntity.ok(HttpStatus.NO_CONTENT)
   }
 }

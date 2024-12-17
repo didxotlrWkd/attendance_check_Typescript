@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Render, Res, Redirec
 import { AdminService } from './admin.service';
 import { Response } from 'express';
 import { editUserDto } from './dto/edit-user.dto';
-import { ResponseUserDto } from 'src/user/dto/response-user.dto';
+import { UserResponseDto } from 'src/user/dto/response-user.dto';
 import { editEventDto } from './dto/edit-event.dto';
 import { AdminLocalAuthGuard } from 'src/security/admin.auth.guard';
 import { AdminLoggedInGuard } from 'src/security/admin.logged-in.guard';
@@ -33,7 +33,7 @@ export class AdminController {
   @Get('/userinfo')
   @UseGuards(AdminLoggedInGuard)
   @Render('adminDashboard.html')
-  async checkAllUserInfo(): Promise<{ users: ResponseUserDto[] }> {
+  async checkAllUserInfo(): Promise<{ users: UserResponseDto[] }> {
     const users = await this.adminService.checkAllUserInfo();
     return { users }
   }
@@ -49,7 +49,7 @@ export class AdminController {
   @Post('/user/edit')
   @UseGuards(AdminLoggedInGuard)
   @Render('adminDashboard.html')
-  async editUser(@Body() body: editUserDto): Promise<{ users: ResponseUserDto[] }> {
+  async editUser(@Body() body: editUserDto): Promise<{ users: UserResponseDto[] }> {
     const users = await this.adminService.editUser(body);
     return { users }
   }
@@ -74,7 +74,7 @@ export class AdminController {
   @Post('/draw/random-user')
   @UseGuards(AdminLoggedInGuard)
   @Render('drawPage.html')
-  async drawRandomParticipant(@Body() body): Promise<{ users: ResponseUserDto[] }> {
+  async drawRandomParticipant(@Body() body): Promise<{ users: UserResponseDto[] }> {
     const users = await this.adminService.drawRandomParticipant(body);
     return { users }
   }
@@ -103,7 +103,7 @@ export class AdminController {
   @Post('/search/specific-user')
   @UseGuards(AdminLoggedInGuard)
   @Render('adminDashboard.html')
-  async searchSpecificUser(@Body('student_code') student_code: string): Promise<{ users: ResponseUserDto[] }> {
+  async searchSpecificUser(@Body('student_code') student_code: string): Promise<{ users: UserResponseDto[] }> {
 
     const users = await this.adminService.searchSpecificUser(student_code);
 
@@ -131,7 +131,7 @@ export class AdminController {
   @Post('/search/id')
   @UseGuards(AdminLoggedInGuard)
   @Render('adminDashboard.html')
-  async searchUserById(@Body('user_id') user_id: number): Promise<{ users: ResponseUserDto[] }> {
+  async searchUserById(@Body('user_id') user_id: number): Promise<{ users: UserResponseDto[] }> {
     const user = await this.adminService.searchUserById(user_id);
     return { users: user }
   }

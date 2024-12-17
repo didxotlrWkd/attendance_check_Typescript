@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { ResponseUserDto } from 'src/user/dto/response-user.dto';
 import { UserRepository } from 'src/modules/user/repositories/user.repository';
 import { CrpytService } from 'src/security/crypt.service';
 import { editUserDto } from './dto/edit-user.dto';
@@ -8,6 +7,7 @@ import { DrawnUserRepository } from 'src/modules/event/repositories/drawnUser.re
 import { EventRepository } from 'src/modules/event/repositories/event.repository';
 import { editEventDto } from './dto/edit-event.dto';
 import { ExcelService } from 'src/util/exel.service';
+import { UserResponseDto } from 'src/user/dto/response-user.dto';
 
 @Injectable()
 export class AdminService {
@@ -41,7 +41,7 @@ export class AdminService {
     return { template: 'login.html', data };
   }
 
-  async checkAllUserInfo(): Promise<ResponseUserDto[]> {
+  async checkAllUserInfo(): Promise<UserResponseDto[]> {
     try {
       const encrypt_user_info = await this.userRepository.findAllUser()
       const decrypt_user_info = this.cryptService.decryptUserInfo(encrypt_user_info)
@@ -147,7 +147,7 @@ export class AdminService {
     }
   }
 
-  async searchSpecificUser(student_code: string): Promise<ResponseUserDto[]> {
+  async searchSpecificUser(student_code: string): Promise<UserResponseDto[]> {
     try {
       const encrypt_student_code = this.cryptService.encrypt(student_code)
       const user = await this.userRepository.findUserByEncryptStudentCode(encrypt_student_code)
@@ -194,7 +194,7 @@ export class AdminService {
     }
   }
 
-  async searchUserById(user_id: number): Promise<ResponseUserDto[]> {
+  async searchUserById(user_id: number): Promise<UserResponseDto[]> {
     try {
       const user = await this.userRepository.findUserById(user_id)
       return [user]

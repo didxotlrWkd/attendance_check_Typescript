@@ -1,16 +1,18 @@
-import { HttpException, HttpStatus, Injectable, Next } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ForbiddenException, HttpException, HttpStatus, Injectable, Next } from '@nestjs/common';
 import { LoginUserDto } from './dto/login-user.dto';
 
 import { UserRepository } from 'src/modules/user/repositories/user.repository';
 import { CrpytService } from 'src/security/crypt.service';
 import { PasswordService } from 'src/security/password.service';
 import { UserPayload } from 'src/security/payload.interface';
-import { AuthService } from 'src/security/auth.service';
 import { RefreshTokenRepository } from 'src/modules/jwt/repositories/refreshtoken.repository';
 import { RefreshTokenBlackListRepository } from 'src/modules/jwt/repositories/refreshtokenBlackList.repository';
 import { ParticipantRepository } from 'src/modules/event/repositories/participant.repository';
 import { EventRepository } from 'src/modules/event/repositories/event.repository';
+import { plainToInstance } from 'class-transformer';
+import { UserResponseDto } from './dto/response-user.dto';
+import { EventListResponseDto } from './dto/response-event.dto';
+
 
 
 @Injectable()
@@ -22,10 +24,8 @@ export class UserService {
     private readonly refreshTokenBlackListRepository: RefreshTokenBlackListRepository,
     private readonly participantRepository: ParticipantRepository,
     private readonly eventRepository: EventRepository,
-    private readonly configService: ConfigService,
     private readonly cryptService: CrpytService,
     private readonly passwordService: PasswordService,
-    private readonly authService: AuthService
   ) { }
 
   async login(body: LoginUserDto): Promise<number> {
@@ -67,11 +67,18 @@ export class UserService {
     }
   }
 
-  async checkEventList(decoded: UserPayload) {
+  async checkEventList(decoded: UserPayload) : Promise<EventListResponseDto> {
     try {
       const { user_id } = decoded
       const attendance_list = await this.eventRepository.getEventListWithAttendance(user_id)
-      return attendance_list
+      const events = attendance_list.map(event => {
+        return {
+          ...event,
+          participants : event.participants.length > 0 ? true : false
+        }
+      })
+
+      return  {events}
     } catch (err) {
       throw err
     }
@@ -96,17 +103,15 @@ export class UserService {
     }
   }
 
-  async checkMyInfo(decoded: UserPayload) {
+  async checkMyInfo(decoded: UserPayload) : Promise<UserResponseDto>{
     try {
       const { user_id } = decoded
       const user = await this.userRepository.findUserById(user_id)
-      return {
-        student_code: this.cryptService.decrypt(user.student_code),
-        name: this.cryptService.decrypt(user.name),
-        major: user.major,
-      }
+      const decrypt_user_info = this.cryptService.decryptUserDto(user)
+      const plain_user = plainToInstance(UserResponseDto, decrypt_user_info)
+      return plain_user
     } catch (err) {
-      throw err
+      throw new ForbiddenException(err.message)
     }
   }
 
@@ -117,6 +122,8 @@ export class UserService {
       await this.refreshTokenBlackListRepository.saveRefreshTokenInBlackList(refresh_token)
       await this.refreshTokenRepository.deleteRefreshToken(refresh_token, user_id)
       await this.userRepository.deleteUser(user_id)
+
+      return
     } catch (err) {
       throw err
     }
