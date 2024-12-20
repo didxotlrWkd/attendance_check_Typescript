@@ -3,7 +3,6 @@ import { User } from "../entities/User";
 import { Repository } from "typeorm"
 import { InjectRepository } from "@nestjs/typeorm";
 import { LoginUserDto } from "src/user/dto/login-user.dto";
-import { CrpytService } from "src/security/crypt.service";
 import { editUserDto } from "src/admin/dto/edit-user.dto";
 
 @Injectable()

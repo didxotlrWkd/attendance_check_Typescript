@@ -31,8 +31,7 @@ export class RefreshTokenRepository{
                     user_id
                 }
             })
-
-            return find_refresh_token.refresh_token
+            return find_refresh_token?.refresh_token || null
         }catch(err){
             throw err
         }

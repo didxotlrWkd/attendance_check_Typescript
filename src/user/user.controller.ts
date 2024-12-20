@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Delete, Body, UseGuards, HttpStatus} from '@nestjs/common';
+import { Controller, Post, Get, Delete, Body, UseGuards, HttpStatus, HttpCode} from '@nestjs/common';
 import { UserService } from './user.service'; 
 import { LoginUserDto } from './dto/login-user.dto';
 import { AuthService } from 'src/security/auth.service';
@@ -20,7 +20,7 @@ export class UserController {
 
   @ApiOperation({ summary: "로그인" })
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: '로그인 성공, 액세스 토큰과 리프레시 토큰 반환',
     type : JwtResponseDto
   })
@@ -109,6 +109,7 @@ export class UserController {
   @ApiBearerAuth()
   @ApiOperation({ summary: '학생 정보 삭제' })
   @UseGuards(AuthGuard)
+  @HttpCode(204)
   @Delete()
   async deleteUser(
     @Decoded() decoded: UserPayload

@@ -23,7 +23,7 @@ export class AdminModule {
     consumer
       .apply(
         session({
-          secret: 'your-secret-key',
+          secret: process.env.COOKIE_SECRET,
           resave: false,
           saveUninitialized: false,
           cookie: { secure: false }, 

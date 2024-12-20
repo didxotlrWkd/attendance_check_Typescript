@@ -8,8 +8,6 @@ import { EventRepository } from 'src/modules/event/repositories/event.repository
 import { editEventDto } from './dto/edit-event.dto';
 import { ExcelService } from 'src/util/exel.service';
 import { UserResponseDto } from 'src/user/dto/response-user.dto';
-import { classToPlain } from 'class-transformer';
-import { EventListResponseDto } from './dto/response-event.dto';
 
 @Injectable()
 export class AdminService {

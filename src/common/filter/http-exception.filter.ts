@@ -9,9 +9,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
     const message = exception.getResponse();
 
-    console.log(exception)
-
-
     return response
       .status(status)
       .json({

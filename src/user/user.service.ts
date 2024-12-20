@@ -35,7 +35,7 @@ export class UserService {
       const is_user = await this.userRepository.findUserByEncryptStudentCode(encryptbody.student_code)
       if (is_user) {
         if (is_user.name !== encryptbody.name || is_user.major !== encryptbody.major) {
-          throw new HttpException('학생정보가 일치하지 않습니다', HttpStatus.UNAUTHORIZED)
+          throw ({message : '학생정보가 일치하지 않습니다', status_code : HttpStatus.UNAUTHORIZED})
         }
 
         const is_password_valid = await this.passwordService.verifyPassword(encryptbody.password, is_user.password)
@@ -51,8 +51,7 @@ export class UserService {
       })
       return new_user.id
     } catch (err) {
-      console.error(err)
-      throw err
+      throw new HttpException(err.message || "internal server error", err.status_code || HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 
@@ -63,7 +62,7 @@ export class UserService {
       await this.refreshTokenBlackListRepository.saveRefreshTokenInBlackList(refresh_token)
       await this.refreshTokenRepository.deleteRefreshToken(refresh_token, user_id)
     } catch (err) {
-      throw err
+      throw new HttpException(err.message || "internal server error", err.status_code || HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 
@@ -80,7 +79,7 @@ export class UserService {
 
       return  {events}
     } catch (err) {
-      throw err
+      throw new HttpException(err.message || "internal server error", err.status_code || HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
   }
@@ -99,7 +98,7 @@ export class UserService {
       await this.participantRepository.createParticipant(event_code, user_id)
       
     } catch (err) {
-      throw err
+      throw new HttpException(err.message || "internal server error", err.status_code || HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 
@@ -111,7 +110,7 @@ export class UserService {
       const plain_user = plainToInstance(UserResponseDto, decrypt_user_info)
       return plain_user
     } catch (err) {
-      throw new ForbiddenException(err.message)
+      throw new HttpException(err.message || "internal server error", err.status_code || HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 
@@ -119,13 +118,16 @@ export class UserService {
     try {
       const { user_id } = decoded
       const refresh_token = await this.refreshTokenRepository.findRefreshToken(user_id)
+      if(!refresh_token){
+        throw new Error
+      }
       await this.refreshTokenBlackListRepository.saveRefreshTokenInBlackList(refresh_token)
       await this.refreshTokenRepository.deleteRefreshToken(refresh_token, user_id)
       await this.userRepository.deleteUser(user_id)
 
       return
     } catch (err) {
-      throw err
+      throw new HttpException(err.message || "internal server error", err.status_code || HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 }
