@@ -95,13 +95,7 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: '학생 설정 정보 반환',
-    schema: {
-      example: {
-        student_code: "20191535",
-        name: "양태식",
-        major: "사물인터넷학과"
-      }
-    }
+    type : UserResponseDto
   })
   @UseGuards(AuthGuard)
   @Get('setting/info')

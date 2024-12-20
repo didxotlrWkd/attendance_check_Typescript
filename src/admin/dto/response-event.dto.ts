@@ -25,10 +25,6 @@ export class EventDto {
     })
     event_end_time: Date;
   
-    @ApiProperty({
-      description: '이벤트 참가자 목록',
-    })
-    participants : boolean
   }
   
   export class EventListResponseDto {

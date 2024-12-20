@@ -60,7 +60,8 @@ export class EventRepository {
             const event = await this.eventRepository.findOne({
                 where: {
                     event_code
-                }
+                },
+                select: ['event_code', 'event_end_time', 'event_name', 'description','event_start_time', 'location'],
             })
 
             return event
@@ -72,7 +73,7 @@ export class EventRepository {
     async getAllEvents() {
         try {
             const events = await this.eventRepository.find({
-                select: ['event_code', 'event_end_time', 'event_name', 'event_start_time', 'location'],
+                select: ['event_code', 'event_end_time','description', 'event_name', 'event_start_time', 'location'],
                 order: {
                     event_start_time: 'ASC'
                 }

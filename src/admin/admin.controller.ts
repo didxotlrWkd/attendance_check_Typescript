@@ -6,6 +6,7 @@ import { UserResponseDto } from 'src/user/dto/response-user.dto';
 import { editEventDto } from './dto/edit-event.dto';
 import { AdminLocalAuthGuard } from 'src/security/admin.auth.guard';
 import { AdminLoggedInGuard } from 'src/security/admin.logged-in.guard';
+import { EventDto, EventListResponseDto } from './dto/response-event.dto';
 
 @Controller('admin')
 export class AdminController {
@@ -16,6 +17,7 @@ export class AdminController {
   async loginPage() {
   }
 
+  //세션 로그인
   @Post('/login')
   @UseGuards(AdminLocalAuthGuard)
   @Redirect('/admin/userinfo')
@@ -25,7 +27,9 @@ export class AdminController {
 
   @Get('logout')
   @UseGuards(AdminLoggedInGuard)
-  async logout(@Res() res:Response) {
+  async logout(
+    @Res() res:Response
+  ) {
     res.clearCookie('connect.sid', { httpOnly: true });
     return res.redirect('/admin/login');
   }
@@ -33,7 +37,8 @@ export class AdminController {
   @Get('/userinfo')
   @UseGuards(AdminLoggedInGuard)
   @Render('adminDashboard.html')
-  async checkAllUserInfo(): Promise<{ users: UserResponseDto[] }> {
+  async checkAllUserInfo(
+  ): Promise<{ users: UserResponseDto[] }> {
     const users = await this.adminService.checkAllUserInfo();
     return { users }
   }
@@ -41,7 +46,9 @@ export class AdminController {
   @Post('/user/edit/page')
   @UseGuards(AdminLoggedInGuard)
   @Render('userEditPage.html')
-  async editUserPage(@Body('user_id') user_id: number): Promise<{ user: editUserDto }> {
+  async editUserPage(
+    @Body('user_id') user_id: number
+  ): Promise<{ user: editUserDto }> {
     const user = await this.adminService.editUserPage(user_id)
     return { user }
   }
@@ -49,7 +56,9 @@ export class AdminController {
   @Post('/user/edit')
   @UseGuards(AdminLoggedInGuard)
   @Render('adminDashboard.html')
-  async editUser(@Body() body: editUserDto): Promise<{ users: UserResponseDto[] }> {
+  async editUser(
+    @Body() body: editUserDto
+  ): Promise<{ users: UserResponseDto[] }> {
     const users = await this.adminService.editUser(body);
     return { users }
   }
@@ -57,8 +66,11 @@ export class AdminController {
   @Post('/user/delete')
   @UseGuards(AdminLoggedInGuard)
   @Redirect('/admin/userinfo')
-  async deleteUserByAdmin(@Body("user_id") user_id: number) {
-    return this.adminService.deleteUserByAdmin(user_id);
+  async deleteUserByAdmin(
+    @Body("user_id") user_id: number
+  ) {
+    await this.adminService.deleteUserByAdmin(user_id);
+    return
   }
 
   @Post('edit/password')
@@ -68,13 +80,16 @@ export class AdminController {
     @Body('password') password: string,
     @Body('user_id') user_id: number
   ) {
-    return this.adminService.editUserPassword(password, user_id);
+    await this.adminService.editUserPassword(password, user_id);
+    return
   }
 
   @Post('/draw/random-user')
   @UseGuards(AdminLoggedInGuard)
   @Render('drawPage.html')
-  async drawRandomParticipant(@Body() body): Promise<{ users: UserResponseDto[] }> {
+  async drawRandomParticipant(
+    @Body() body
+  ): Promise<{ users: UserResponseDto[] }> {
     const users = await this.adminService.drawRandomParticipant(body);
     return { users }
   }
@@ -96,14 +111,18 @@ export class AdminController {
   @Post('/draw/random-user/project')
   @UseGuards(AdminLoggedInGuard)
   @Render('drawPageForProject.html')
-  async drawRandomUserResultPageForProjector(@Body('draw_count') draw_count: number) {
+  async drawRandomUserResultPageForProjector(
+    @Body('draw_count') draw_count: number
+  ) {
     return this.adminService.drawRandomUserResultPageForProjector(draw_count);
   }
 
   @Post('/search/specific-user')
   @UseGuards(AdminLoggedInGuard)
   @Render('adminDashboard.html')
-  async searchSpecificUser(@Body('student_code') student_code: string): Promise<{ users: UserResponseDto[] }> {
+  async searchSpecificUser(
+    @Body('student_code') student_code: string
+  ): Promise<{ users: UserResponseDto[] }> {
 
     const users = await this.adminService.searchSpecificUser(student_code);
 
@@ -113,7 +132,8 @@ export class AdminController {
   @Get('/events')
   @UseGuards(AdminLoggedInGuard)
   @Render('eventPage.html')
-  async searchEvents() {
+  async searchEvents(
+  ): Promise<EventListResponseDto>{
     const events = await this.adminService.searchEvents();
 
     return events
@@ -122,7 +142,9 @@ export class AdminController {
   @Get('/event/edit')
   @UseGuards(AdminLoggedInGuard)
   @Render('editEventPage.html')
-  async editEventPage(@Query('event_code') event_code: string) {
+  async editEventPage(
+    @Query('event_code') event_code: string
+  ) : Promise<{event : EventDto}>{
     const event = await this.adminService.editEventPage(event_code);
 
     return event
@@ -131,7 +153,9 @@ export class AdminController {
   @Post('/search/id')
   @UseGuards(AdminLoggedInGuard)
   @Render('adminDashboard.html')
-  async searchUserById(@Body('user_id') user_id: number): Promise<{ users: UserResponseDto[] }> {
+  async searchUserById(
+    @Body('user_id') user_id: number
+  ): Promise<{ users: UserResponseDto[] }> {
     const user = await this.adminService.searchUserById(user_id);
     return { users: user }
   }
@@ -139,7 +163,9 @@ export class AdminController {
   @Post('/event/edit')
   @UseGuards(AdminLoggedInGuard)
   @Redirect('/admin/events')
-  async editEvent(@Body() body: editEventDto) {
+  async editEvent(
+    @Body() body: editEventDto
+  ) {
     const events = await this.adminService.editEvent(body);
 
     return events
@@ -155,13 +181,18 @@ export class AdminController {
   @Post('/event')
   @UseGuards(AdminLoggedInGuard)
   @Redirect('/admin/events')
-  async addEvent(@Body() body: editEventDto) {
-    return await this.adminService.addEvent(body);
+  async addEvent(
+    @Body() body: editEventDto
+  ) {
+    await this.adminService.addEvent(body);
+    return
   }
 
   @Get('/download/student-info')
   @UseGuards(AdminLoggedInGuard)
-  async downloadExcel(@Res() res: Response) {
+  async downloadExcel(
+    @Res() res: Response
+  ) {
     try {
       const excelPath = await this.adminService.downloadExcel();
       res.download(excelPath, (err) => {

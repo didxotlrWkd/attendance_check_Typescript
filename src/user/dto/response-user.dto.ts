@@ -6,21 +6,24 @@ import { IsString } from "class-validator";
 export class UserResponseDto {
 
     @ApiProperty({
-        description: "학번"
+        description: "학번",
+        example: "20191234"
     })
     @Expose()
     @IsString()
     student_code: string;
 
     @ApiProperty({
-        description: "학과"
+        description: "학과",
+        example: "사물인터넷학과"
     })
     @Expose()
     @IsString()
     major: string;
 
     @ApiProperty({
-        description: "이름"
+        description: "이름",
+        example: "양태식"
     })
     @Expose()
     @IsString()
@@ -28,6 +31,6 @@ export class UserResponseDto {
 
     constructor(partial: Partial<UserResponseDto>) {
         Object.assign(this, partial);
-      }
+    }
 }
 
